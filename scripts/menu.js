@@ -2,33 +2,41 @@ import { getAllCoffeeMenus } from '../api.js';
 
 export async function initMenuPage() {
 
-    // IMPORTANT:
-    // ต้อง query หลัง inject html แล้ว
-
     const menuContainer =
         document.getElementById('menuContainer');
 
     if (!menuContainer) {
+
         console.error('menuContainer not found');
+
         return;
+
     }
 
     try {
 
-        const menus = await getAllCoffeeMenus();
+        const menus =
+            await getAllCoffeeMenus();
 
         if (menus && menus.length > 0) {
 
-            renderMenu(menus, menuContainer);
+            renderMenu(
+                menus,
+                menuContainer
+            );
 
             setupScrollAnimation();
 
         } else {
 
             menuContainer.innerHTML = `
+
                 <p style="text-align:center;">
+
                     ไม่พบข้อมูลเมนูกาแฟ
+
                 </p>
+
             `;
 
         }
@@ -38,34 +46,65 @@ export async function initMenuPage() {
         console.error(error);
 
         menuContainer.innerHTML = `
+
             <p style="text-align:center;">
+
                 ขออภัย ไม่สามารถโหลดเมนูได้
+
             </p>
+
         `;
+
     }
+
 }
 
-// image selector
+/* =========================
+   IMAGE SELECTOR
+========================= */
+
 function getCoffeeImage(title) {
 
     if (!title) {
+
         return './image/default-coffee.png';
+
     }
 
-    const name = title.toLowerCase();
+    const name =
+        title.toLowerCase();
 
     const images = {
 
-        latte: './image/latte.png',
-        caramellatte: './image/caramellatte.png',
-        matchalatte: './image/matchalatte.png',
-        americano: './image/americano.png',
-        cappuccino: './image/cappuccino.png',
-        espresso: './image/espresso.png',
-        macchiato: './image/macchiato.png',
-        mocha: './image/mocha.png',
-        hotchocolate: './image/hotchocolate.png',
-        default: './image/default-coffee.png'
+        latte:
+            './image/latte.png',
+
+        caramellatte:
+            './image/caramellatte.png',
+
+        matchalatte:
+            './image/matchalatte.png',
+
+        americano:
+            './image/americano.png',
+
+        cappuccino:
+            './image/cappuccino.png',
+
+        espresso:
+            './image/espresso.png',
+
+        macchiato:
+            './image/macchiato.png',
+
+        mocha:
+            './image/mocha.png',
+
+        hotchocolate:
+            './image/hotchocolate.png',
+
+        default:
+            './image/default-coffee.png'
 
     };
 
@@ -133,102 +172,154 @@ function getCoffeeImage(title) {
     }
 
     return images.default;
+
 }
 
-// render menu
-function renderMenu(menus, menuContainer) {
+/* =========================
+   RENDER MENU
+========================= */
 
-    menuContainer.innerHTML = menus.map(coffee => {
+function renderMenu(
+    menus,
+    menuContainer
+) {
 
-        const coffeeImgUrl =
-            getCoffeeImage(coffee.title);
+    menuContainer.innerHTML =
+        menus.map((coffee, index) => {
 
-        return `
+            const coffeeImgUrl =
+                getCoffeeImage(
+                    coffee.title
+                );
 
-            <div class="coffee-card scroll-reveal">
+            return `
 
-                <div class="card-top-content">
+                <div
+                    class="coffee-card scroll-reveal"
+                    style="
+                        transition-delay:
+                        ${index * 0.08}s
+                    "
+                >
 
-                    <div class="card-image-container">
+                    <div class="card-top-content">
 
-                        <img
-                            src="${coffeeImgUrl}"
-                            alt="${coffee.title}"
-                            class="coffee-img"
-                        >
+                        <div class="card-image-container">
+
+                            <img
+                                src="${coffeeImgUrl}"
+                                alt="${coffee.title}"
+                                class="coffee-img"
+                            >
+
+                        </div>
+
+                        <h3>
+
+                            ${coffee.title || 'Coffee'}
+
+                        </h3>
+
+                        <p class="coffee-desc">
+
+                            ${coffee.description || ''}
+
+                        </p>
 
                     </div>
 
-                    <h3>
-                        ${coffee.title || 'Coffee'}
-                    </h3>
+                    <div class="card-bottom-content">
 
-                    <p class="coffee-desc">
-                        ${coffee.description || ''}
-                    </p>
+                        <div class="price-tag">
+
+                            ฿${coffee.price || '0'}
+
+                            <span class="weight-text">
+
+                                / 250g
+
+                            </span>
+
+                        </div>
+
+                        <div class="action-buttons-group">
+
+                            <button class="btn-buy">
+
+                                สั่งซื้อเลย
+
+                            </button>
+
+                            <button class="btn-cart">
+
+                                🛒
+
+                            </button>
+
+                        </div>
+
+                    </div>
 
                 </div>
 
-                <div class="card-bottom-content">
+            `;
 
-                    <div class="price-tag">
+        }).join('');
 
-                        ฿${coffee.price || '0'}
-
-                        <span class="weight-text">
-                            / 250g
-                        </span>
-
-                    </div>
-
-                    <div class="action-buttons-group">
-
-                        <button class="btn-buy">
-                            สั่งซื้อเลย
-                        </button>
-
-                        <button class="btn-cart">
-                            🛒
-                        </button>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        `;
-
-    }).join('');
 }
 
-// animation
+/* =========================
+   SCROLL ANIMATION
+========================= */
+
 function setupScrollAnimation() {
 
     const cards =
-        document.querySelectorAll('.scroll-reveal');
+        document.querySelectorAll(
+            '.scroll-reveal'
+        );
 
     if (!cards.length) return;
 
     const observer =
-        new IntersectionObserver((entries) => {
+        new IntersectionObserver(
 
-            entries.forEach(entry => {
+            (entries) => {
 
-                if (entry.isIntersecting) {
+                entries.forEach(entry => {
 
-                    entry.target.classList.add('active');
+                    if (
+                        entry.isIntersecting
+                    ) {
 
-                } else {
+                        entry.target.classList.add(
+                            'active'
+                        );
 
-                    entry.target.classList.remove('active');
+                    } else {
 
-                }
+                        entry.target.classList.remove(
+                            'active'
+                        );
 
-            });
+                    }
 
-        });
+                });
 
-    cards.forEach(card => observer.observe(card));
+            },
 
+            {
+
+                threshold: 0.05,
+
+                rootMargin:
+                    '0px 0px -40px 0px'
+
+            }
+
+        );
+
+    cards.forEach(card => {
+        observer.observe(card);
+    });
 }
